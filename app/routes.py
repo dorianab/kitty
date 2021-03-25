@@ -65,10 +65,14 @@ def login():
 
     #on check si le mot de passe marche
     sql_request = f'''SELECT * FROM players WHERE players_email = "{email}" AND players_password = "{password}"'''
+    players_avec_ce_password = sql_select(sql_request)
+    if len(players_avec_ce_password) == 0:
+        return "Password n, existe pas", 401
 
-    
-
-    return "Not implemented", 501
+    thisdict = {
+        "id":(players_avec_ce_password[0]["players_id"])
+    }
+    return jsonify(thisdict), 200
 
 
 @app.route('/signup', methods=['POST'])
