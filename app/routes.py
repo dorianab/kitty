@@ -114,7 +114,14 @@ def rooms_handling(players_id):
 
 
 def get_rooms_request(players_id):
-    return "Not implemented", 501
+    sql_request = f f''''SELECT * FROM rooms.player_id = {players_id}'''
+    room_spawn = sql_select(sql_request)
+
+    for room in room_spawn:
+        room_id = room["rooms_id"]
+        sql_request = f'''SELECT * FROM cats WHERE cats.rooms.id = {players_id}'''
+        room["cats"] = sql_select(sql_request)
+    return jsonify(room_spawn)
 
 
 def add_room_request(players_id, request_json):
@@ -123,7 +130,21 @@ def add_room_request(players_id, request_json):
 
 
 def add_room(players_id, pos_x, pos_y, seed):
-    return "Not implemented", 501
+
+  #check si une room existe déja a cette position
+    sql_request = f'''SELECT * FROM rooms
+    WHERE player_id = "{players_id}"
+    AND rooms_position_x = "{pos_x}"
+    AND rooms_position_y = "{pos_y}"'''
+    player_rooms_info = sql_select(sql_request)
+
+    if len(player_rooms_info) > 0
+        return "une room éxiste déja ici", 403
+    else:
+        sql_request = f'''INSERT INTO rooms(rooms_position_y, rooms_seed, player_id)
+        VALUES("{pos_x}", "{pos_y}", "{seed}", "{players_id}")'''
+        execute = sql_insert(sql_request)
+        return  {"id": execute}, 200
 
 
 @app.route('/users/<int:players_id>/rooms/<int:rooms_id>', methods=['DELETE'])
